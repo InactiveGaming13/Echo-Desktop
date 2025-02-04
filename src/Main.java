@@ -7,7 +7,15 @@ import java.util.Arrays;
 class GFG {
     public static void main(String[] args) throws IOException {
         // Creating a new frame using JFrame
-        JFrame f = new JFrame();
+        JFrame f = new JFrame("Echo");
+
+        f.setIconImage(ImageIO.read(new File("Echo.png")));
+
+        // Setting Frame width and height
+        f.setSize(500, 500);
+
+        // Using no layout managers
+        f.setLayout(null);
 
         // Creating an instance of JButton
         JButton connectButton = new JButton("CONNECT");
@@ -60,17 +68,9 @@ class GFG {
         f.add(ip);
         f.add(port);
 
-        // Setting Frame width and height
-        f.setSize(500, 500);
-
-        // Using no layout managers
-        f.setLayout(null);
-
         // Making the frame visible
         f.setVisible(true);
 
-        f.setTitle("Echo");
-        f.setIconImage(ImageIO.read(new File("res/Echo.png")));
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
