@@ -17,6 +17,9 @@ class GFG {
         // Using no layout managers
         f.setLayout(null);
 
+        // Make the app close with the window
+        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
         // Creating an instance of JButton
         JButton connectButton = new JButton("CONNECT");
 
@@ -48,7 +51,7 @@ class GFG {
             String host = ip.getText();
             String portNumber = port.getText();
             String user = username.getText();
-            String pass = Arrays.toString(password.getPassword());
+            String pass = new String(password.getPassword());
 
             String hostAddress = "https://" + host + ":" + portNumber;
             System.out.println("Attempting to connect to server (" + hostAddress + ")...");
@@ -70,8 +73,6 @@ class GFG {
 
         // Making the frame visible
         f.setVisible(true);
-
-        f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public static boolean checkHost(String host) {
