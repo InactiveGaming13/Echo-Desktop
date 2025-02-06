@@ -11,7 +11,7 @@ class GFG {
         f.setIconImage(ImageIO.read(new File("Echo.png")));
 
         f.setSize(500, 500);
-        f.setResizable(false);
+        f.setResizable(true);
         f.setLocationRelativeTo(null);
         f.setLayout(new GridBagLayout());
 
