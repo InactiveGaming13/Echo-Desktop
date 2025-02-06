@@ -1,52 +1,53 @@
 import java.io.*;
 import javax.imageio.*;
 import javax.swing.*;
+import java.awt.*;
 import java.net.Socket;
-import java.util.Arrays;
 
 class GFG {
     public static void main(String[] args) throws IOException {
-        // Creating a new frame using JFrame
         JFrame f = new JFrame("Echo");
-
         f.setIconImage(ImageIO.read(new File("Echo.png")));
 
-        // Setting Frame width and height
         f.setSize(500, 500);
-
-        // Using no layout managers
-        f.setLayout(null);
-
-        // Make the app close with the window
+        f.setResizable(false);
+        f.setLocationRelativeTo(null);
+        f.setLayout(new GridBagLayout());
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Creating an instance of JButton
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.BOTH; // Expand components with the window
+        gbc.weightx = 1.0; // Allow horizontal expansion
+
         JButton connectButton = new JButton("CONNECT");
+        gbc.gridx = 0; gbc.gridy = 0; gbc.weighty = 0.1;
+        f.add(connectButton, gbc);
 
-        // x axis, y axis, width, height
-        connectButton.setBounds(150, 75, 100, 25);
+        JTextField username = new JTextField(15);
+        username.setPreferredSize(null);
+        gbc.gridy = 1;
+        f.add(username, gbc);
 
-        JTextField username = new JTextField();
+        JPasswordField password = new JPasswordField(15);
+        password.setPreferredSize(null);
+        gbc.gridy = 2;
+        f.add(password, gbc);
 
-        username.setBounds(125, 150, 150, 25);
+        JTextField ip = new JTextField("echo.disbroad.com", 15);
+        ip.setPreferredSize(null);
+        gbc.gridy = 3;
+        f.add(ip, gbc);
 
-        JPasswordField password = new JPasswordField();
-
-        password.setBounds(125, 175, 150, 25);
-
-        JTextField ip = new JTextField("echo.disbroad.com");
-
-        ip.setBounds(125, 200, 150, 25);
-
-        JTextField port = new JTextField("443");
-
-        port.setBounds(125, 225, 150, 25);
+        JTextField port = new JTextField("443", 15);
+        port.setPreferredSize(null);
+        gbc.gridy = 4;
+        f.add(port, gbc);
 
         JButton exitButton = new JButton("EXIT");
+        gbc.gridy = 5; gbc.weighty = 0.1;
+        f.add(exitButton, gbc);
 
-        exitButton.setBounds(150, 275, 100, 25);
-
-        // Adding action listener to the button
         connectButton.addActionListener(e -> {
             String host = ip.getText();
             String portNumber = port.getText();
@@ -63,15 +64,6 @@ class GFG {
             System.exit(0);
         });
 
-        // Adding button to the frame
-        f.add(connectButton);
-        f.add(exitButton);
-        f.add(username);
-        f.add(password);
-        f.add(ip);
-        f.add(port);
-
-        // Making the frame visible
         f.setVisible(true);
     }
 
