@@ -3,12 +3,15 @@ import javax.imageio.*;
 import javax.swing.*;
 import java.awt.*;
 import java.net.Socket;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import org.jdesktop.swingx.*;
 
 class GFG {
     public static Socket clientSocket;
     public static PrintWriter out;
+    public static ObjectOutputStream objOut;
     public static BufferedReader in;
 
     public static void main(String[] args) throws IOException {
@@ -114,8 +117,15 @@ class GFG {
             System.out.println("Connected to server (" + host + ":" + port + ")");
 
             out = new PrintWriter(clientSocket.getOutputStream(), true);
+            objOut = new ObjectOutputStream(clientSocket.getOutputStream());
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
+            HashMap<String, String> map = new HashMap<>();
+            map.put("action", "login");
+            map.put("username", user);
+            map.put("password", pass);
+            System.out.println(Arrays.toString(map.entrySet().toArray()));
+            // String resp = objOut.writeObject(new Array[]{map});
             String response = sendMessage("hello server");
             System.out.println("Server: " + response);
         } catch (IOException e) {
