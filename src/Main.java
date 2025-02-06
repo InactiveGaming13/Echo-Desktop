@@ -6,6 +6,7 @@ import java.net.Socket;
 
 class GFG {
     public static void main(String[] args) throws IOException {
+        // Creating a new frame using JFrame
         JFrame f = new JFrame("Echo");
         f.setIconImage(ImageIO.read(new File("Echo.png")));
 
@@ -13,6 +14,10 @@ class GFG {
         f.setResizable(false);
         f.setLocationRelativeTo(null);
         f.setLayout(new GridBagLayout());
+
+        f.getContentPane().setBackground(new java.awt.Color(25, 25, 25));
+
+        // Make the app close with the window
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         GridBagConstraints gbc = new GridBagConstraints();
