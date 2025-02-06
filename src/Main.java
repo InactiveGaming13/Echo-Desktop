@@ -4,13 +4,24 @@ import javax.swing.*;
 import java.awt.*;
 import java.net.Socket;
 
+import org.jdesktop.swingx.*;
+
 class GFG {
+    public static Socket clientSocket;
+    public static PrintWriter out;
+    public static BufferedReader in;
+
     public static void main(String[] args) throws IOException {
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        int width = gd.getDisplayMode().getWidth();
+        int height = gd.getDisplayMode().getHeight();
+
         // Creating a new frame using JFrame
         JFrame f = new JFrame("Echo");
-        f.setIconImage(ImageIO.read(new File("Echo.png")));
+        f.setIconImage(ImageIO.read(new File("resources/img/Echo.png")));
 
-        f.setSize(500, 500);
+        f.setMinimumSize(new Dimension(250, 250));
+        f.setSize(width / 5, height / 3);
         f.setResizable(true);
         f.setLocationRelativeTo(null);
         f.setLayout(new GridBagLayout());
@@ -26,11 +37,14 @@ class GFG {
         gbc.weightx = 1.0; // Allow horizontal expansion
 
         JButton connectButton = new JButton("CONNECT");
-        gbc.gridx = 0; gbc.gridy = 0; gbc.weighty = 0.1;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weighty = 0.1;
         f.add(connectButton, gbc);
 
-        JTextField username = new JTextField(15);
+        JXTextField username = new JXTextField("", 15);
         username.setPreferredSize(null);
+        username.setPrompt("Username...");
         gbc.gridy = 1;
         f.add(username, gbc);
 
@@ -39,19 +53,17 @@ class GFG {
         gbc.gridy = 2;
         f.add(password, gbc);
 
-        JTextField ip = new JTextField("echo.disbroad.com", 15);
+        JXTextField ip = new JXTextField("", 15);
         ip.setPreferredSize(null);
+        ip.setPrompt("IP Address...");
         gbc.gridy = 3;
         f.add(ip, gbc);
 
-        JTextField port = new JTextField("443", 15);
+        JXTextField port = new JXTextField("", 15);
         port.setPreferredSize(null);
+        port.setPrompt("Port...");
         gbc.gridy = 4;
         f.add(port, gbc);
-
-        JButton exitButton = new JButton("EXIT");
-        gbc.gridy = 5; gbc.weighty = 0.1;
-        f.add(exitButton, gbc);
 
         connectButton.addActionListener(e -> {
             String host = ip.getText();
@@ -59,24 +71,33 @@ class GFG {
             String user = username.getText();
             String pass = new String(password.getPassword());
 
-            String hostAddress = "https://" + host + ":" + portNumber;
+            String hostAddress = host + ":" + portNumber;
             System.out.println("Attempting to connect to server (" + hostAddress + ")...");
-            connectToServer(host, portNumber, user, pass);
-        });
-
-        exitButton.addActionListener(e -> {
-            System.out.println("Exiting the program, Have a nice day!");
-            System.exit(0);
+            try {
+                connectToServer(host, portNumber, user, pass);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
 
         f.setVisible(true);
+    }
+
+    public static void stopConnection() throws IOException {
+        in.close();
+        out.close();
+        clientSocket.close();
     }
 
     public static boolean checkHost(String host) {
         return (host != null && !host.isEmpty()) && (host.matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$") || host.matches("^:?[a-z]{2,}\\.[a-z]{2,6}$") || host.matches("^:?[a-z]{2,}\\.[a-z]{2,}\\.[a-z]{2,6}$"));
     }
 
-    public static void connectToServer(String host, String port, String user, String pass) {
+    public static boolean checkPort(String port) {
+        return port.matches("^((6553[0-5])|(655[0-2][0-9])|(65[0-4][0-9]{2})|(6[0-4][0-9]{3})|([1-5][0-9]{4})|([0-5]{0,5})|([0-9]{1,4}))$");
+    }
+
+    public static void connectToServer(String host, String port, String user, String pass) throws IOException {
         if (!checkHost(host)) {
             JOptionPane.showMessageDialog(null, "Please enter a valid IP address", "Invalid IP", JOptionPane.ERROR_MESSAGE);
             return;
@@ -84,26 +105,26 @@ class GFG {
         if (port == null || port.isEmpty()) {
             port = "443";
         }
-        if (!port.matches("^((6553[0-5])|(655[0-2][0-9])|(65[0-4][0-9]{2})|(6[0-4][0-9]{3})|([1-5][0-9]{4})|([0-5]{0,5})|([0-9]{1,4}))$")) {
+        if (!checkPort(port)) {
             JOptionPane.showMessageDialog(null, "Please enter a valid port number", "Invalid Port", JOptionPane.ERROR_MESSAGE);
             return;
         }
         try {
-            Socket socket = new Socket(host, Integer.parseInt(port));
+            clientSocket = new Socket(host, Integer.parseInt(port));
             System.out.println("Connected to server (" + host + ":" + port + ")");
 
-            DataInputStream input = new DataInputStream(socket.getInputStream());
-            DataOutputStream output = new DataOutputStream(socket.getOutputStream());
+            out = new PrintWriter(clientSocket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-            output.writeUTF(user);
-            output.writeUTF(pass);
-
-            String response = input.readUTF();
-            System.out.println("Server response: " + response);
-
-            socket.close();
+            String response = sendMessage("hello server");
+            System.out.println("Server: " + response);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error connecting to server: " + e.getMessage());
         }
+    }
+
+    public static String sendMessage(String msg) throws IOException {
+        out.println(msg);
+        return in.readLine();
     }
 }
